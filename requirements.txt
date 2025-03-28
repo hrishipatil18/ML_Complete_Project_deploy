@@ -4,7 +4,7 @@ notebook
 numpy
 scikit-learn
 matplotlib
-python-box==6.0.2
+python-box==6.0.2 ## for logging and exception creation create box exception using this
 pyYAML
 tqdm
 ensure==1.0.2
