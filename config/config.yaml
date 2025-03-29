@@ -6,3 +6,8 @@ data_ingestion:
   source_URL: https://github.com/hrishipatil18/datasets/raw/refs/heads/main/winequality-data.zip   # Link to download the dataset.
   local_data_file: artifacts/data_ingestion/data.zip #Path for storing the downloaded file.
   unzip_dir: artifacts/data_ingestion  #Directory to extract the dataset.
+
+data_validation:
+  root_dir: artifacts/data_validation #Directory for storing validated data.
+  unzip_data_dir: artifacts/data_ingestion/winequality-red.csv # The path to the dataset (winequality-red.csv) after data ingestion.
+  STATUS_FILE: artifacts/data_validation/status.txt # A file where the validation status (e.g., success/failure) is logged.
