@@ -52,4 +52,16 @@ config_filepath = CONFIG_FILE_PATH,
         )
 
     return data_validation_config
-    
+
+
+    def get_data_transformation_config(self) -> DataTransformationConfig:
+        config = self.config.data_transformation #Retrieves the data_transformation settings from config.yaml
+
+        create_directories([config.root_dir])  # Ensures that the root directory for data validation exists. Calls create_directories() to create the directory if it doesn’t exist.
+ 
+        data_transformation_config = DataTransformationConfig(
+            root_dir=config.root_dir,
+            data_path=config.data_path,
+        )
+
+        return data_transformation_config

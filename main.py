@@ -1,6 +1,7 @@
 from mlProject import logger  # Used for logging pipeline execution progress.
 from mlProject.pipeline.stage_01_data_ingestion import DataIngestionTrainingPipeline # Runs the data ingestion stage.
 from mlProject.pipeline.stage_02_data_validation import DataValidationTrainingPipeline # Runs the data validation stage.
+from mlProject.pipeline.stage_03_data_transformation import DataTransformationTrainingPipeline # Runs the data Transformation stage.
 
 STAGE_NAME = "Data Ingestion stage" #  Helps in structured logging for better debugging.
 try:
@@ -25,4 +26,17 @@ try:
 except Exception as e:
         logger.exception(e)
         raise e
-   
+
+
+
+
+STAGE_NAME = "Data Transformation stage"
+try:
+   logger.info(f">>>>>> stage {STAGE_NAME} started <<<<<<") 
+   data_ingestion = DataTransformationTrainingPipeline()
+   data_ingestion.main()
+   logger.info(f">>>>>> stage {STAGE_NAME} completed <<<<<<\n\nx==========x")
+except Exception as e:
+        logger.exception(e)
+        raise e
+
