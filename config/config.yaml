@@ -2,7 +2,7 @@ artifacts_root: artifacts
 
 
 data_ingestion:
-  root_dir: artifacts/data_ingestion
-  source_URL: https://github.com/hrishipatil18/datasets/raw/refs/heads/main/winequality-data.zip
-  local_data_file: artifacts/data_ingestion/data.zip
-  unzip_dir: artifacts/data_ingestion
+  root_dir: artifacts/data_ingestion    #Directory for storing ingested data.
+  source_URL: https://github.com/hrishipatil18/datasets/raw/refs/heads/main/winequality-data.zip   # Link to download the dataset.
+  local_data_file: artifacts/data_ingestion/data.zip #Path for storing the downloaded file.
+  unzip_dir: artifacts/data_ingestion  #Directory to extract the dataset.
