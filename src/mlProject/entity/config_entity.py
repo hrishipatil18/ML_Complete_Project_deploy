@@ -35,3 +35,14 @@ class ModelTrainerConfig:
     alpha: float    # define in params.yml
     l1_ratio: float # define in params.yml
     target_column: str # define in schema.yaml
+
+
+@dataclass(frozen=True)
+class ModelEvaluationConfig:
+    root_dir: Path # The directory where model evaluation results (metrics, logs) are stored.
+    test_data_path: Path # The path to the test dataset used for evaluation (e.g., test.csv).
+    model_path: Path # The path to the trained model file
+    all_params: dict # Stores model hyperparameters 
+    metric_file_name: Path # The path where evaluation metrics (accuracy, F1-score, RMSE, etc.) will be saved.
+    target_column: str # Specifies the target variable (e.g., quality in wine dataset). 
+    mlflow_uri: str # The MLflow tracking server URI for logging model metrics.Helps in experiment tracking and performance monitoring.
