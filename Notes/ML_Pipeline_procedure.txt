@@ -1,0 +1,788 @@
+############################### DATA INGESTION ##################	
+
+Data Ingestion is the process of collecting, importing, and processing data from various sources into a storage system or database for further analysis. 
+In AI/ML pipelines, efficient data ingestion is crucial for training models, real-time analytics, and automation.
+
+********* 1. Update Config.yaml
+
+YAML configuration with an artifacts_root key, which likely specifies the root directory where artifacts (such as logs, models, or data files) will be stored. 
+This is commonly used in machine learning, CI/CD pipelines, and deployment configurations.
+
+
+artifacts_root: artifacts 
+
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  source_URL: https://github.com/hrishipatil18/datasets/raw/refs/heads/main/winequality-data.zip
+  local_data_file: artifacts/data_ingestion/data.zip
+  unzip_dir: artifacts/data_ingestion
+  
+********* 2. Entity (Update config_entity.py)
+
+An entity is an instance of a class.
+Entities help define configurations for different stages like data ingestion, preprocessing, and model training.
+
+from dataclasses import dataclass 
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class DataIngestionConfig:
+    root_dir: Path
+    source_URL: str
+    local_data_file: Path
+    unzip_dir: Path
+
+
+********* 3. Constants
+Constants are fixed values in a program that do not change during execution. 
+They help maintain readability, reusability, and prevent accidental modifications.
+ 
+
+# Below code defines constants for important file paths using Python’s pathlib.Path
+
+from pathlib import Path
+
+CONFIG_FILE_PATH = Path("config/config.yaml")
+PARAMS_FILE_PATH = Path("params.yaml")
+SCHEMA_FILE_PATH = Path("schema.yaml")
+
+
+********* 4. Update Configuration.py
+
+The configuration.py file is typically used in projects to load, parse, and manage configuration settings dynamically.
+Instead of hardcoding values, it reads from external configuration files like YAML, JSON, or environment variables, making the system more flexible and maintainable.
+
+
+
+
+********* 5.components (create data_ingestion.py)
+In an ML project, components refer to different modular parts that handle specific tasks, such as data ingestion, data validation, training, evaluation, and deployment.
+Each component is usually implemented as a separate Python module, making the system scalable, reusable, and maintainable.
+data_ingestion Fetches, downloads, and prepares data.
+
+
+
+
+********* 6. pipeline (create stage_01_data_ingestion.py)
+A pipeline is a structured workflow that automates multiple steps of an ML process, such as data ingestion, preprocessing, training, evaluation, and deployment. It ensures that each step is executed sequentially and efficiently.
+data_ingestion Downloads and extracts the dataset.
+
+********* 7. Update main.py
+
+The main.py script orchestrates the entire machine learning pipeline by sequentially executing different stages such as data ingestion, validation, preprocessing, training, and evaluation.
+
+
+
+############################### DATA Validation ##################	
+
+Data validation ensures that data is accurate, complete, and formatted correctly before it is processed or stored. 
+It is crucial in AI/ML pipelines, data analysis, and database management to prevent errors and improve data quality.
+
+## Types of Data Validation
+
+1.Type Validation – Ensuring data is of the expected type (e.g., integer, string, boolean).
+
+2. Range Validation – Checking if numerical values fall within an acceptable range.
+
+3. Format Validation – Ensuring data follows a specific format (e.g., email, date, JSON structure).
+
+4. Uniqueness Validation – Avoiding duplicate records in databases or datasets.
+
+5. Consistency Validation – Ensuring data is logically consistent (e.g., date of birth cannot be in the future).
+
+6. Completeness Validation – Checking if required fields are missing.
+
+7. Referential Integrity – Ensuring foreign keys in databases reference valid records.
+
+
+
+********* 1. Update Config.yaml
+
+Similar as ingestion just few changes needed
+
+example:
+data_validation:
+  root_dir: artifacts/data_validation #Directory for storing validated data.
+  unzip_data_dir: artifacts/data_ingestion/winequality-red.csv # The path to the dataset (winequality-red.csv) after data ingestion.
+  STATUS_FILE: artifacts/data_validation/status.txt # A file where the validation status (e.g., success/failure) is logged.
+  
+
+********* 2. Update Schema.yaml
+
+A schema.yaml file defines the expected structure of your dataset for validation.
+
+example: 
+
+COLUMNS:
+  fixed acidity: float64
+  volatile acidity: float64
+  citric acid: float64
+  residual sugar: float64
+  chlorides: float64
+  free sulfur dioxide: float64
+  total sulfur dioxide: float64
+  density: float64
+  pH: float64
+  sulphates: float64
+  alcohol: float64
+  quality: int64
+
+
+TARGET_COLUMN:
+  name: quality
+
+Example2:
+
+schema:
+  columns:
+    fixed_acidity: float
+    volatile_acidity: float
+    citric_acid: float
+    residual_sugar: float
+    chlorides: float
+    free_sulfur_dioxide: int
+    total_sulfur_dioxide: int
+    density: float
+    pH: float
+    sulphates: float
+    alcohol: float
+    quality: int  # Target variable
+
+  constraints:
+    fixed_acidity:
+      min: 3.0
+      max: 16.0
+    volatile_acidity:
+      min: 0.1
+      max: 2.0
+    citric_acid:
+      min: 0.0
+      max: 1.5
+    quality:
+      allowed_values: [3, 4, 5, 6, 7, 8, 9]  # Only valid quality scores
+
+  checks:
+    missing_values: true
+    duplicates: true
+    outliers: false
+
+columns → Defines expected data types for each column.
+
+constraints → Specifies valid ranges for numerical values and allowed categories for categorical ones.
+
+checks → Enables/disables validations like missing values, duplicate detection, and outlier checks.  
+
+********* 3. Entity (Update config_entity.py)
+ "Entity" in the context of a structured data validation pipeline. 
+ An entity in this case represents a structured object (such as a dataset, table, or object in an ML pipeline) that contains various attributes (columns/features).
+
+Example1 : 
+@dataclass(frozen=True)
+class DataValidationConfig:
+    root_dir: Path
+    STATUS_FILE: str
+    unzip_data_dir: Path
+    all_schema: dict
+
+
+********* 4. Update Configuration.py
+
+configuration.py file should handle loading and providing configurations for different stages of your data pipeline, including data validation
+
+It is similar to  data_ingestion
+
+
+********* 5.components (create data_validation.py)
+
+Purpose: Ensures the dataset meets the expected structure.
+
+Key Tasks:
+
+Check if the file exists.
+
+Validate column names and data types against schema.yaml.
+
+Detect missing values or anomalies.
+
+Log the validation status.
+
+
+
+
+********* 6. pipeline (create stage_01_data_ingestion.py)
+
+A data validation pipeline ensures that input data meets the required structure before proceeding to training. 
+Below is a structured end-to-end pipeline that integrates data validation into your ML workflow.
+
+
+
+
+********* 7. Update main.py
+
+
+similar to data_ingestion
+
+#######################  EVERYTHING similar as data_ingestion and data_validation if anything new will written below
+
+
+ 
+
+############################### DATA Transformation ##################	
+
+
+############################### model Trainer ##################	
+
+The model trainer component is responsible for training a machine learning model using preprocessed data and saving the trained model for future inference. 
+Below is a structured breakdown of how it works in your pipeline.
+
+********* 8. Update params.yml
+used to store hyperparameters and configuration settings for your ML pipeline. 
+It allows easy modifications without changing the actual code.
+
+Example1 :
+# Parameters for data splitting
+data_split:
+  test_size: 0.2
+  random_state: 42
+
+# Model Training Parameters
+model_params:
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 20
+  optimizer: "adam"
+
+# Paths for artifacts
+paths:
+  raw_data: "artifacts/data_ingestion/winequality-red.csv"
+  train_data: "artifacts/data_transformation/train.csv"
+  test_data: "artifacts/data_transformation/test.csv"
+  model: "artifacts/model/trained_model.pkl"
+
+# Logging settings
+logging:
+  level: "INFO"
+
+
+Example2 :
+here we are using elastic net
+ElasticNet:
+  alpha: 0.2
+  l1_ratio: 0.1
+
+
+############################### model Evaluation ##################	
+
+The model evaluation component is responsible for assessing the performance of the trained model using test data and various metrics.
+It ensures that the model generalizes well before deployment.
+
+********* 9. create Dagshub repo for mlflow
+
+DagsHub: A Collaboration & Version Control Platform for Machine Learning
+DagsHub is a GitHub-like platform built for machine learning projects. 
+It helps data scientists and ML engineers collaborate, track, and version control their datasets, models, and experiments efficiently.
+
+# Why Use DagsHub?
+
+Data & Model Version Control ️
+
+Uses DVC (Data Version Control) to track datasets, models, and large files.
+
+Experiment Tracking 
+
+Supports MLflow for logging model parameters, metrics, and artifacts.
+
+Git & DVC Integration 
+
+Works like GitHub but also tracks large datasets & ML models.
+
+Cloud Storage Support 
+
+Integrates with AWS S3, Google Drive, Azure, etc.
+
+Reproducibility & CI/CD 
+
+Enables automated ML workflows with clear version history.
+
+# How Does DagsHub Work?
+1. Version Control for Data & Models (DVC)
+	Stores datasets and model files without bloating Git repositories.
+
+	Tracks changes in datasets & model versions.
+
+	Works like Git but for data & ML models.
+
+2. Experiment Tracking (MLflow)
+	Logs hyperparameters, metrics, and models automatically.
+
+	Helps compare multiple model versions & training runs.
+
+3. Collaboration & Reproducibility
+	Teams can work together with a centralized version control system.
+
+	Ensures everyone has access to the same datasets & models.
+
+🔹 Example Use Cases
+✅ MLOps Pipelines – Track data, models & experiments in one place.
+✅ Data Science Collaboration – Teams can work together on datasets & models.
+✅ Reproducible Research – Maintain versioned datasets for academic projects.
+
+
+# 
+for dagshub here we are not giving any specific key so to run  mlflow ui in bash then run main.py and go to http://127.0.0.1:5000 in your browser. 
+mlfloe experiments will be open. there you can see evaluation matrix for given hyper parameters.
+
+
+
+############################### Prediction.py ##################	
+
+a script used in machine learning pipelines to load a trained model and make predictions on new data.
+
+
+# What prediction.py Does
+		Loads the trained model (e.g., model.joblib from artifacts/model_trainer/).
+		
+		Loads new input data (from a CSV, API, or user input).
+		
+		Processes the input data (if needed, like scaling or encoding).
+		
+		Makes predictions using the trained model.
+		
+		Outputs the predictions (prints or saves results).
+		
+############################### app.py ##################	
+
+Helps to make user interface to predict. like web application were we provide values and it will predict target
+
+app.py will likely serve as the entry point for deploying your model using FastAPI or Flask. 
+
+
+############################# Dockerfile ###################
+
+A Dockerfile is a script containing a series of instructions to automate the process of creating a Docker image. 
+The image is a lightweight, standalone, and executable package that includes everything needed to run an application, including the code, dependencies, and system libraries.
+
+Typical Dockerfile Structure:
+
+	# 1. Base Image
+	FROM python:3.9  # Uses an official Python image as the base
+	
+	# 2. Set Working Directory
+	WORKDIR /app  # Sets /app as the working directory in the container
+	
+	# 3. Copy Files
+	COPY . .  # Copies all files from the local directory to the container
+	
+	# 4. Install Dependencies
+	RUN pip install --no-cache-dir -r requirements.txt  # Installs required dependencies
+	
+	# 5. Expose Port
+	EXPOSE 8080  # Opens port 8080 to allow access
+	
+	# 6. Set Environment Variables (Optional)
+	ENV FLASK_APP=app.py
+	ENV FLASK_RUN_HOST=0.0.0.0
+	
+	# 7. Define Entry Point
+	CMD ["python", "app.py"]  # Runs the Flask app
+
+
+# Most Common Docker Commands
+
+docker build -t myapp .			: Builds a Docker image named myapp using the current directory (.).
+docker images					: Lists all available Docker images.
+docker run -p 8080:8080 myapp	: Runs the myapp container and maps port 8080 of the container to port 8080 of the host.
+docker ps						: Shows all running containers.
+docker ps -a					: Lists all containers, including stopped ones.
+docker stop <container_id>		: Stops a running container.
+docker rm <container_id>		: Removes a stopped container.
+docker rmi <image_id>			: Deletes an image from the system.
+docker logs <container_id>		: Displays logs of a container.
+docker exec -it <container_id> 	: bash	Opens a terminal inside the running container.
+docker-compose up				: Starts all 	services defined in a docker-compose.yml file.
+docker-compose down				: Stops and removes containers defined in docker-compose.yml.	
+
+
+
+
+# How It Works
+
+	You create a Dockerfile defining the environment.
+	
+	You build an image using docker build -t myapp .
+	
+	You run a container using docker run -p 8080:8080 myapp
+	
+	Your application is now running inside a container and accessible on localhost:8080.
+
+
+
+############################# main.yaml ###################
+
+
+It is used for ci/cd deployment. no need to change that file it common file uded for all kind of projects
+
+A main.yaml file is commonly used in various contexts, such as defining configurations for deployment, pipeline setups, or continuous integration/continuous deployment (CI/CD) workflows. It can contain configuration information that is parsed by a system or application. 
+Based on the structure and purpose of your project, here’s an example of how a main.yaml file might be structured.
+
+# Example of a main.yaml Configuration File:
+
+	project:
+	name: "Wine Quality Prediction"
+	version: "1.0.0"
+	description: "A machine learning model for predicting wine quality based on features like acidity, alcohol, etc."
+	
+	stages:
+	data_ingestion:
+		enabled: true
+		input_file: "data/winequality-red.csv"
+		output_dir: "artifacts/data_ingestion"
+	
+	data_validation:
+		enabled: true
+		root_dir: "artifacts/data_validation"
+		unzip_data_dir: "artifacts/data_ingestion/winequality-red.csv"
+		status_file: "artifacts/data_validation/status.txt"
+	
+	data_transformation:
+		enabled: true
+		test_size: 0.2
+		random_state: 42
+		train_output_dir: "artifacts/data_transformation/train"
+		test_output_dir: "artifacts/data_transformation/test"
+	
+	model_trainer:
+		enabled: true
+		model_name: "ElasticNet"
+		hyperparameters:
+		alpha: 1.0
+		l1_ratio: 0.5
+		output_dir: "artifacts/model_trainer"
+	
+	model_evaluation:
+		enabled: true
+		model_path: "artifacts/model_trainer/model.joblib"
+		test_data_path: "artifacts/data_transformation/test.csv"
+		metric_file_name: "artifacts/model_evaluation/metrics.json"
+		metrics: ["rmse", "mae", "r2"]
+	
+	prediction:
+		enabled: true
+		model_path: "artifacts/model_trainer/model.joblib"
+		input_data_file: "input_data.json"
+		output_file: "predictions.json"
+	
+	mlflow:
+	uri: "https://dagshub.com/your_repo/your_project.mlflow"
+	experiment_name: "Wine Quality Prediction Experiment"
+	tracking_url: "https://dagshub.com/your_repo/mlflow"
+	
+	logging:
+	level: "INFO"
+	log_dir: "logs"
+	log_format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+	
+	aws:
+	access_key_id: "your_access_key"
+	secret_access_key: "your_secret_key"
+	region: "us-west-2"
+
+# Explanation of the Fields:
+	project: Contains the metadata for the project, such as the name, version, and a description of what the project does.
+	
+	stages: Defines different stages of your machine learning pipeline (e.g., data ingestion, validation, transformation, training, evaluation, and prediction). Each stage has parameters that control its behavior:
+	
+	For example, data_ingestion has an input_file and output_dir where the ingested data will be stored.
+	
+	data_transformation includes details like test_size and output directories for the training and testing datasets.
+	
+	mlflow: Contains configuration for using MLflow for model tracking and experimentation. It specifies the MLflow URI, experiment name, and tracking URL to log model metrics, parameters, and artifacts.
+	
+	logging: Specifies the logging configuration, including the log level, log directory, and log format.
+	
+	aws: If your project integrates with AWS (e.g., for data storage or computation), this section contains your AWS credentials and region.
+
+# How to Use the main.yaml File:
+
+	Loading Configuration: You can load this YAML configuration into your Python code using the PyYAML library, like so:
+	
+	import yaml
+	
+	with open('main.yaml', 'r') as file:
+		config = yaml.safe_load(file)
+	
+	print(config['project']['name'])  # Outputs: Wine Quality Prediction
+	Pipeline Configuration: The stages section will help you control which parts of the pipeline should run, and you can easily toggle individual stages by setting enabled: true/false.
+	
+	Customizing Hyperparameters: You can define hyperparameters for model training in the model_trainer section, like the regularization term (alpha) and the ratio of L1 and L2 penalties (l1_ratio).
+
+
+
+######################################### Deployment
+
+Step 1: Create docker image and main.yaml
+
+Step 2: AWS Console : Create IAM user
+
+	We create an IAM (Identity and Access Management) user in AWS to securely grant programmatic access to AWS services.
+	
+	In your case, an IAM user is needed for GitHub Actions to authenticate and interact with Amazon ECR (Elastic Container Registry) for tasks like:
+	✅ Pushing Docker images to ECR (so they can be deployed).
+	✅ Deploying containers (if using ECS, EC2, or Lambda).
+	✅ Accessing other AWS services (like S3, DynamoDB, etc., if required).
+	
+	Why Not Use Root User?
+	The root user has full control over your AWS account, making it a security risk.
+	
+	Instead, an IAM user with limited permissions ensures that GitHub Actions only has access to what's necessary (e.g., ECR access).
+	
+	## follow below steps to create it :
+	
+	AWS Console => Search for IAM => add user => give name => attach existing policy => add policy => search for policy and add => user created
+	then Go to created user => Security credential => create access => commandline interface => next => download .csv
+	
+	
+
+
+
+Step 3: Create ECR
+
+	Amazon ECR (Elastic Container Registry) is a secure, scalable, and managed Docker container registry that allows you to store, manage, and deploy container images.
+	
+	# why we use ECR instead of other options:
+	
+	1. To Store & Manage Docker Images
+	ECR provides a centralized repository to store Docker images, ensuring easy access and version control for containerized applications.
+	
+	2. For Secure Access & Authentication
+	ECR integrates with AWS IAM for secure access control.
+	Unlike public registries (Docker Hub, GitHub Container Registry), ECR is private by default, reducing the risk of unauthorized access.
+	
+	3. To Deploy Containers in AWS Services
+	If you're using ECS (Elastic Container Service) or EKS (Elastic Kubernetes Service), ECR makes it easy to deploy containers.
+	Works seamlessly with Lambda functions (for serverless container-based execution).
+	
+	4. To Automate CI/CD Pipelines
+	You can push Docker images from GitHub Actions, Jenkins, or AWS CodePipeline into ECR.
+	AWS services (ECS, EKS) can automatically pull the latest image from ECR during deployments.
+	
+	5. To Reduce Costs & Improve Performance
+	Lower costs than Docker Hub’s paid plans for private images.
+	Faster pulls for AWS workloads (since the registry is inside AWS).
+	No rate limits, unlike Docker Hub, which limits free pulls.
+	
+	6. To Enable Image Scanning & Compliance
+	Built-in security scanning detects vulnerabilities in container images.
+	Helps maintain compliance with security policies (e.g., AWS Security Hub, CIS benchmarks).
+	
+	7. To Support Multi-Region & High Availability
+	You can replicate ECR repositories across multiple AWS regions.
+	Ensures high availability and disaster recovery for containerized applications.
+	
+	Example Use Case (GitHub Actions + AWS ECR + ECS Deployment)
+	1️ Developers push code to GitHub.
+	2️ GitHub Actions builds a Docker image and pushes it to ECR.
+	3️ ECS (Amazon Elastic Container Service) pulls the latest image from ECR and deploys it.
+	
+	This ensures automated, secure, and scalable deployments.
+	
+	# Steps to create ECR
+	
+	AWS console => search ECR => create repository => give name => create repository
+	go to created repository => must copy url (some where so we can use this URI to push Docker images.)
+
+Step 4: Create EC2 instance 
+
+	AWS EC2 (Elastic Compute Cloud) is a virtual machine in the cloud. It allows you to run applications, host websites, deploy ML models, and more without needing physical servers.
+
+	# Reasons to Create an EC2 Instance
+		1. Host Web Applications & Websites 🌐
+		You can run web servers (Apache, Nginx) to host websites.
+		
+		Example: Deploying a Flask, FastAPI, or Django application.
+		
+		2️. Deploy Machine Learning (ML) Models 🤖
+		Run AI/ML workloads on GPU-based instances (like g4dn, p3, or p4).
+		
+		Train models using TensorFlow, PyTorch, Hugging Face, etc.
+		
+		Example: Deploy a YOLO object detection model or an LLM-based chatbot.
+		
+		3️. Run & Test Software in a Scalable Environment ⚙️
+		Test your applications before production.
+		
+		Example: Running Jupyter Notebooks, Docker containers, or CI/CD pipelines.
+		
+		4️. Handle High-Traffic Applications 🚀
+		EC2 scales up to handle high user requests.
+		
+		Used for e-commerce, real-time applications, and gaming servers.
+		
+		5️. Host Databases & Data Processing 🗄️
+		Run MySQL, PostgreSQL, MongoDB, or NoSQL databases.
+		
+		Process big data using Spark, Hadoop, or Kafka.
+		
+		6️. Secure & Reliable Compute Power 🔐
+		Unlike local machines, EC2 provides 99.99% uptime.
+	
+		Easily manage backups and disaster recovery.
+	
+	# When Should You Use EC2?
+		✅ You need a scalable virtual server
+		✅ You want on-demand compute power without managing physical servers
+		✅ You need custom environments (Linux, Ubuntu, Windows, etc.)
+		✅ You want to host Docker containers, APIs, or microservices
+		
+	# Steps to create EC2 Instance :
+	AWS Consle => search EC2 => Launch Instance => give name => choose AMI ie. select os => instance type(as per requirements) => 
+	=> Key pair => create new key pair => give name => allows https,http (for web apps) => configure storage (as per requirements) => Launch Instance
+	
+	go to created instance => click on instance id => click on connect => It will open terminal => 
+	=> install docker in ec2 using below commands :
+														#optinal
+
+														sudo apt-get update -y
+													
+														sudo apt-get upgrade
+														
+														#required
+													
+														curl -fsSL https://get.docker.com -o get-docker.sh
+													
+														sudo sh get-docker.sh
+													
+														sudo usermod -aG docker ubuntu
+													
+														newgrp docker
+														
+														#check docker is running or not
+														
+														docker --version
+	
+	
+
+
+Step 5: Configure EC2 as self hosted runner
+
+	Configuring an AWS EC2 instance as a self-hosted GitHub Actions runner allows you to run CI/CD workflows on your own infrastructure instead of using GitHub's default runners.
+	This is useful when you need more control, performance, or security.
+	
+	# Benefits of Using an EC2 Self-Hosted Runner
+	
+		1️. Full Control Over Environment
+		You can install custom dependencies, libraries, and tools that GitHub’s default runners might not support.
+		Use specific OS versions (e.g., Ubuntu, Amazon Linux, or Windows).
+		Configure security settings and permissions as needed.
+		
+		2️. No Time Limits on Jobs
+		GitHub-hosted runners have job time limits (6-hour max for free users), but self-hosted runners can run as long as needed.
+		Ideal for long-running jobs like model training, large data processing, or infrastructure deployments.
+		
+		3️. Faster Execution & Lower Latency
+		EC2 instances can be closer to your data sources (e.g., AWS S3, RDS, DynamoDB), reducing network latency.
+		You can use high-performance EC2 instances (GPU, memory-optimized) to run workflows faster.
+		
+		4️. Cost Savings for Large Workloads
+		GitHub-hosted runners charge per minute for execution time, while self-hosted runners on EC2 can be more cost-effective (especially with AWS Spot Instances).
+		You can auto-scale instances to save costs when idle.
+		
+		5️. Secure & Private Execution
+		Sensitive credentials & API keys stay within your AWS environment instead of being shared with GitHub's runners.
+		Use AWS IAM roles for secure access to AWS resources.
+		
+		6️. Integration with AWS Services
+		Since the runner is inside AWS, it can easily interact with:
+		S3 (for storing artifacts)
+		Lambda (for event-driven automation)
+		ECS/EKS (for containerized deployments)
+		RDS/DynamoDB (for database updates)
+		CloudWatch (for monitoring and logging)
+		
+		7️. Supports Custom Hardware (GPU, TPU, etc.)
+		Default GitHub runners do not provide GPUs, but with EC2, you can choose GPU-enabled instances (e.g., p3, g4dn) for ML training, AI inference, or deep learning workflows.
+	
+	# When Should You Use an EC2 Self-Hosted Runner?
+		✅ When you need custom software environments
+		✅ If you require faster execution & lower latency
+		✅ When cost optimization is important for long CI/CD jobs
+		✅ For secure & private execution (no exposure to GitHub servers)
+		✅ When working with AWS services (S3, RDS, Lambda, etc.)
+		✅ For GPU-intensive workloads (ML, AI, data processing)
+
+	# Steps to configure EC2 as self-hosted :
+	go to github your project repository => go to Settings(which is repo setting inside repo) => actions => runner => New self-hosted runner =>
+	=> select mac-os/windows/linux format => after this you wii se command copy the setup commands => 
+	=> execute one by one at our ec2 instance terminal => if asked name of runnre give self-hosted(it is must)
+
+Step 6: Setup github secrets
+
+	GitHub Secrets store sensitive information (like API keys, AWS credentials, or database passwords) securely in GitHub Actions workflows. Instead of hardcoding secrets in your repository, you define them in GitHub Secrets and reference them in your workflows.
+	
+	# Why Use GitHub Secrets?
+	✅ Security – Keeps credentials safe and out of code.
+	✅ Reusability – Easily access secrets across workflows.
+	✅ Scalability – Supports both repository-level and organization-level secrets. 
+	
+	# Steps to Set Up GitHub Secrets
+	
+	Go to your GitHub repository. => Click on Settings (top-right corner) => Scroll down and find Secrets and variables → Click Actions => 
+	=> Click New repository secret => Add a New Secret =>
+															Name: Choose a meaningful name (e.g., AWS_ACCESS_KEY_ID, DB_PASSWORD).
+	
+															Value: Enter the secret value (e.g., AWS Key, API Token, or Password).
+	
+															Click Add secret.
+															
+															
+	
+	✅ Do NOT store secrets in the code – Always use secrets.* in workflows.
+	✅ Use descriptive names – Example: AWS_ACCESS_KEY_ID, DOCKER_PASSWORD.
+	✅ Restrict access – Only grant necessary permissions.
+	✅ Rotate secrets regularly – Change AWS/API keys periodically.
+	✅ Use Organization-level secrets for multi-repo projects.
+
+
+
+Step 7: Test CI/CD or we can say final deployment.
+
+	After setting up your GitHub Actions workflow, test it by making a small change in your repository and pushing it.
+
+	# commit and push changes => Check GitHub Actions under your github repo:
+	
+		Go to GitHub → Your Repo → Actions and monitor the workflow.
+	
+	# Monitor GitHub Actions Logs for Errors:
+	
+	Go to your GitHub repository => Click on the Actions tab => Select the latest workflow run =>
+	=> You can see CI/CD make sure it will not through error, if error got resolve it and push again till CI/CD run successfully 
+	
+	
+	Expand each job (like Build and Push, Deploy, etc.) and check for errors.
+	Look for messages like:
+	
+	"Step completed successfully" (Good!)
+	
+	"Permission Denied" (Possible IAM role issue)(fix it)
+	
+	"Authentication failed" (Check AWS credentials in GitHub Secrets) (fix it)
+	
+	"Äny code error failed"(fix it)
+
+
+Step 8: Final Deployment and verify :
+
+	# add rule for 8080
+	Go back to your EC2 instance => security => security group +. edit enbound rule => add rule => Custom : TCP, port : 8080 => save rules
+	
+	# verify 
+	
+	Go back to your EC2 instance again => copy public ipv4 address => paste it in explorer tab and give port 8080 (eg. 35.154.93.30:8080)
+	You can see your web app successfully open and running.
+	
+	That means your deployment done. Now whenever you push new changes in git that will reflected to your web app
+
+
+Step 9: If stop deployment / required terminate AWS instances (EC2,ECR,IMA etc)
+

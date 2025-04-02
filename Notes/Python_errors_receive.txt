@@ -1,0 +1,27 @@
+##########################################  LIB Installation / requirement.txt #######################
+
+************* 1 command 'cmake' failed:
+
+""error: command 'cmake' failed: None
+  [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for pyarrow
+Failed to build pyarrow
+ERROR: ERROR: Failed to build installable wheels for some pyproject.toml based projects (pyarrow)""
+
+Solution : 
+
+cmake --version
+if not download cmake https://cmake.org/download/  Choose the Windows x64 Installer (.msi).
+
+
+####### AttributeError: 'TestCase' object has no attribute 'assertRaisesRegexp' 
+
+While : from mlProject.utils.common import read_yaml, create_directories
+
+Cause :
+The issue is likely caused by the ensure package being outdated or incompatible with your Python version. 
+
+Solution:
+pip install --upgrade ensure

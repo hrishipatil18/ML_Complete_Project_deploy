@@ -1,0 +1,1130 @@
+################ import os 
+provides a way to interact with the operating system.
+It allows you to perform various OS-related tasks such as file and directory manipulation, environment variable handling,and process management.
+
+# Get current working directory
+print(os.getcwd())  
+
+# List files and directories
+print(os.listdir("."))  
+
+# Change directory
+os.chdir("/path/to/directory")  
+
+# Create a directory
+os.mkdir("new_folder")  
+
+# Create directories recursively
+os.makedirs("parent_folder/child_folder")  
+
+# Remove an empty directory
+os.rmdir("new_folder")  
+
+# Remove a directory and all its contents
+import shutil
+shutil.rmtree("parent_folder") 
+
+# Rename a file
+os.rename("old_file.txt", "new_file.txt")
+
+# Remove a file
+os.remove("file_to_delete.txt")
+
+# Get an environment variable
+print(os.environ.get("HOME"))  
+
+# Set an environment variable
+os.environ["MY_VAR"] = "SomeValue"
+
+# function checks whether a given file or directory exists.
+os.path.exists(path)
+
+# Get File Size in Bytes
+os.path.getsize(path)
+
+################ from pathlib import Path     Modern File & Path Handling in Python
+
+The pathlib module in Python provides an object-oriented approach to working with files and directories. 
+It replaces many functions from os and os.path, making code more readable and efficient
+
+from pathlib import Path
+
+file_path = Path("example.txt")
+print(file_path)  # Output: example.txt
+
+# Creates a folder
+Path("new_folder").mkdir()  
+
+# Creates nested directories
+Path("parent/child").mkdir(parents=True, exist_ok=True)  
+
+# Current directory
+directory = Path(".")  
+for file in directory.iterdir():
+    print(file)
+
+# Write to a file
+file_path.write_text("Hello, World!")  
+
+# Read from a file
+print(file_path.read_text())  
+
+
+
+
+################ import logging
+
+The logging module in Python provides a flexible framework for recording log messages, which helps in debugging, monitoring, and tracking errors in an application.
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)  # Set logging level
+logging.debug("This is a debug message")
+logging.info("This is an info message")
+logging.warning("This is a warning message")
+logging.error("This is an error message")
+logging.critical("This is a critical message")
+
+#Custom Logging Format
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s:%(levelname)s:%(module)s:%(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+
+logging.info("This is an info message")
+
+# Logging to a File
+logging.basicConfig(
+    filename="app.log",  # Log file name
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+
+logging.warning("This will be written to a file")
+
+logger = logging.getLogger("my_logger")
+logger.setLevel(logging.DEBUG)
+
+# Create console handler
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# Create file handler
+fh = logging.FileHandler("app.log")
+fh.setLevel(logging.WARNING)  # Only warnings and above go to file
+
+# Create formatter
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+# Attach formatter to handlers
+ch.setFormatter(formatter)
+fh.setFormatter(formatter)
+
+# Attach handlers to logger
+logger.addHandler(ch)
+logger.addHandler(fh)
+
+# Example logs
+logger.debug("Debug message")   # Appears in console only
+logger.warning("Warning message") # Appears in console & file
+
+
+################ import setuptools      Packaging Python Projects
+
+setuptools is a Python library used to package and distribute Python projects. 
+It helps create installable packages (.whl, .tar.gz) that can be uploaded to PyPI or shared with others.
+
+pip install setuptools
+
+To package a Python project, create the following file structure:
+
+my_package/
+│── my_package/         # Your package directory
+│   ├── __init__.py     # Required for a package
+│   ├── module.py       # Your Python module
+│── setup.py            # Setup script
+│── README.md           # Project description
+│── requirements.txt    # Dependencies
+│── LICENSE             # License file (optional)
+
+from setuptools import setup, find_packages
+
+setup(
+    name="my_package",             # Package name
+    version="0.1.0",               # Version number
+    author="Your Name",
+    author_email="your.email@example.com",
+    description="A sample Python package",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    packages=find_packages(),      # Automatically find package directories
+    install_requires=[             # Dependencies
+        "numpy",
+        "pandas"
+    ],
+    classifiers=[                  # Metadata for PyPI
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires=">=3.6",        # Minimum Python version
+)
+
+# Build package
+
+Run the following command to create a package:
+bash:
+python setup.py sdist bdist_wheel
+
+#  Install the Package Locally
+
+After building, install it using:
+bash:
+pip install dist/my_package-0.1.0-py3-none-any.whl
+
+# Upload to PyPI (Optional)
+
+If you want to publish your package on PyPI, install twine:
+bash:
+pip install twine
+twine upload dist/*    # then upload
+
+
+################ import sys
+
+The sys module provides access to system-related functions and parameters, such as command-line arguments, interpreter information, and system paths.
+
+# check python version
+import sys
+print(sys.version)  # Full version info
+print(sys.version_info)  # Tuple format
+
+# List of command-line arguments
+print(sys.argv)  
+
+#Exit a Program 
+sys.exit()
+
+# system path : Displays the list of directories where Python searches for modules.
+
+import sys
+print(sys.path)  # List of paths
+
+# Redirect output
+sys.stdout.write("Hello, World!\n")
+
+# Redirect error messages
+sys.stderr.write("This is an error message!\n")
+
+#Get Platform Information
+print(sys.platform)  # Identifies the OS
+
+o/p 
+win32" → Windows
+
+"linux" → Linux
+
+"darwin" → macOS
+
+
+############## from box import ConfigBox 
+
+ConfigBox is part of the python-box package, which provides a way to access dictionary keys as attributes, similar to dot notation (config.key instead of config["key"]). 
+It simplifies working with configuration data.	
+
+for example:
+
+d = {'key':'val',key1:'val'}
+d.key => o/p through error
+But,
+d = configbox({'key':'val',key1:'val'})
+d.key => o/p value
+
+example2:
+
+config = ConfigBox({
+    "database": {
+        "host": "localhost",
+        "port": 5432
+    },
+    "debug": True
+})
+
+# Access nested values
+print(config.database.host)  # Output: localhost
+print(config.database.port)  # Output: 5432
+
+Without ConfigBox, you'd need:
+
+print(config["database"]["host"])  # Less readable
+
+
+# Convert dict to configbox
+
+config_dict = config.to_dict()
+print(config_dict)  # {'name': 'AI Model'}
+
+
+################  from ensure import ensure_annotations
+
+ensure_annotations is part of the ensure library, which enforces Python type hints at runtime. 
+It ensures that function parameters and return values match the specified types.
+
+for example1:
+
+def product(a: int, b: int) -> int:
+    return a * b
+
+print(product(3, 4))  # ✅ Output: 7
+print(product(3, '4'))  # ✅ Output: '444'
+
+But if you use ensure_annotation,
+print(product(3, '4'))  # ✅ Output: Type error
+
+
+like,
+
+from ensure import ensure_annotations
+
+@ensure_annotations
+def add_numbers(a: int, b: int) -> int:
+    return a + b
+
+# Valid call
+print(add_numbers(3, 4))  # ✅ Output: 7
+
+# Invalid call (raises TypeError)
+print(add_numbers(3, "4"))  # ❌ TypeError: Argument 'b' must be <class 'int'>
+
+########### from box.exceptions import BoxValueError 
+
+BoxValueError is an exception class in the python-box library, specifically used when there is an issue with the values inside a Box or ConfigBox object.
+
+#When is BoxValueError Raised?
+It occurs when you try to set an invalid value inside a Box object.
+
+Example of BoxValueError : 
+
+from box import Box
+from box.exceptions import BoxValueError
+
+try:
+    config = Box({"api_key": None}, default_box=True, default_box_attr=None)
+    print(config.api_key.upper())  # Trying to call .upper() on None
+except BoxValueError as e:
+    print(f"BoxValueError occurred: {e}")
+
+Error Explanation:
+
+The key "api_key" is None, but we tried None.upper(), which does not exist.
+
+This raises a BoxValueError.
+
+Using Default Values to Avoid BoxValueError
+To prevent this error, provide a default value:
+
+config = Box(default_box=True, default_box_attr="UNKNOWN")
+
+print(config.api_key.upper())  #  Output: UNKNOWN
+
+##################### Imort yaml
+The yaml module in Python, provided by PyYAML, is used to parse, read, and write YAML files.
+
+Read :
+
+import yaml
+
+I/P:
+
+database:
+  host: localhost
+  port: 5432
+  user: admin
+  password: secret
+  
+code :
+
+with open("config.yaml", "r") as file:
+    config = yaml.safe_load(file)  # Converts YAML to a Python dictionary
+
+print(config["database"]["host"])  # ✅ Output: localhost
+
+write :
+
+data = {
+    "app": {
+        "name": "MyApp",
+        "version": "1.0.0"
+    },
+    "debug": True
+}
+
+with open("output.yaml", "w") as file:
+    yaml.dump(data, file, default_flow_style=False)
+
+# Creates output.yaml:
+# app:
+#   name: MyApp
+#   version: 1.0.0
+# debug: true
+
+Load:
+
+from box import Box
+
+with open("config.yaml", "r") as file:
+    config = Box(yaml.safe_load(file))
+
+print(config.database.host)  # ✅ Output: localhost (dot notation)
+
+
+handle : 
+
+i/p:
+
+servers:
+  - name: server1
+    ip: 192.168.1.1
+  - name: server2
+    ip: 192.168.1.2
+code :
+
+with open("servers.yaml", "r") as file:
+    data = yaml.safe_load(file)
+
+print(data["servers"][0]["name"])  # ✅ Output: server1
+
+
+####################  Import Joblib
+
+The joblib module is a fast and efficient library for saving and loading large objects in Python. 
+It is mainly used for machine learning models, NumPy arrays, and large datasets.
+
+#### Saving loading machinr learning models
+
+import joblib
+from sklearn.ensemble import RandomForestClassifier
+
+# Train a simple model
+model = RandomForestClassifier(n_estimators=10)
+model.fit([[1, 2], [3, 4], [5, 6]], [0, 1, 0])
+
+# Save the model
+joblib.dump(model, "model.pkl")
+
+# Load the model
+loaded_model = joblib.load("model.pkl")
+
+# Use the loaded model
+print(loaded_model.predict([[3, 4]]))  # ✅ Output: [1]
+
+
+
+#### compress large objects
+
+joblib.dump(df, "compressed_data.pkl", compress=3)
+
+###### parallel processing
+
+from joblib import Parallel, delayed
+
+def square(n):
+    return n * n
+
+results = Parallel(n_jobs=4)(delayed(square)(i) for i in range(10))
+
+print(results)  # ✅ Output: [0, 1, 4, 9, 16, ...]
+
+### save laoed large data
+
+import numpy as np
+import pandas as pd
+
+data = {"A": np.random.rand(1000), "B": np.random.rand(1000)}
+df = pd.DataFrame(data)
+
+# Save the DataFrame
+joblib.dump(df, "data.pkl")
+
+# Load the DataFrame
+loaded_df = joblib.load("data.pkl")
+
+print(loaded_df.head())  # ✅ Output: First 5 rows of DataFrame
+
+
+##################### from typing import Any
+
+The Any type hint from the typing module is used in type annotations to indicate that a variable can be of any type.
+
+Allows any data type (str, int, list, dict, etc.).
+
+Useful when you don’t know the exact type.
+
+Helpful in generic functions.
+
+from typing import Any
+
+def process_data(data: Any) -> str:
+    return f"Processing: {data}"
+
+print(process_data(42))       # ✅ Output: Processing: 42
+print(process_data("hello"))  # ✅ Output: Processing: hello
+print(process_data([1, 2, 3])) # ✅ Output: Processing: [1, 2, 3]
+
+
+##################### YAML
+A YAML (Yet Another Markup Language or YAML Ain't Markup Language) file is a human-readable data serialization format commonly used for configuration files, data exchange, and defining structured data. 
+YAML uses indentation (spaces) instead of brackets or other delimiters, making it easy to read and write.
+
+# Example of a YAML configuration file
+app:
+  name: MyApplication
+  version: 1.0.0
+  debug: true
+
+database:
+  host: localhost
+  port: 5432
+  user: admin
+  password: secret
+  name: my_database
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(levelname)s - %(message)s"
+
+servers:
+  - name: server1
+    ip: 192.168.1.1
+    role: web
+  - name: server2
+    ip: 192.168.1.2
+    role: database
+
+#################### from dataclasses import dataclass 
+
+The dataclass decorator in Python is used to automatically generate special methods for a class, such as __init__, __repr__, __eq__, and others.
+It simplifies the creation of classes that are primarily used to store data.
+No need of self
+
+Example : 
+from dataclasses import dataclass
+
+@dataclass
+class Person:
+    name: str
+    age: int
+    city: str
+
+person1 = Person(name="Hrishikesh", age=25, city="Bengaluru")
+print(person1)  # Output: Person(name='Hrishikesh', age=25, city='Bengaluru')
+
+Example1:
+
+from dataclasses import dataclass 
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class DataIngestionConfig:      #DataIngestionConfig class is a frozen dataclass, meaning its instances are immutable once created
+    root_dir: Path
+    source_URL: str
+    local_data_file: Path
+    unzip_dir: Path
+
+
+
+########################### import urllib.request as request
+
+The urllib.request module in Python is used for fetching data across the web, typically for downloading files or making HTTP requests.
+
+#Downloading a File from a URL  request.urlretrieve(url, file_path)
+
+import urllib.request as request
+
+url = "https://example.com/sample.txt"
+file_path = "sample.txt"
+
+request.urlretrieve(url, file_path)
+print("Download complete!")
+
+
+# Reading Content from a Web Page (without saving)   response.read().decode("utf-8")
+
+import urllib.request as request
+
+url = "https://www.example.com"
+with request.urlopen(url) as response:
+    html_content = response.read().decode("utf-8")
+
+print(html_content)  # Prints the webpage HTML
+
+# Making a Request with Headers   request.Request(url, headers=headers)
+
+import urllib.request as request
+
+url = "https://api.example.com/data"
+headers = {"User-Agent": "Mozilla/5.0"}
+
+req = request.Request(url, headers=headers)
+with request.urlopen(req) as response:
+    data = response.read().decode("utf-8")
+
+print(data)  # Prints the API response
+
+
+########################### import zipfile
+
+The zipfile module in Python is used to create, read, extract, and manipulate ZIP files.
+It's part of Python's standard library, so no additional installation is required.
+
+# Extracting a ZIP File  zip_ref.extractall(extract_to)
+
+import zipfile
+
+zip_path = "sample.zip"
+extract_to = "unzipped_folder"
+
+with zipfile.ZipFile(zip_path, "r") as zip_ref:
+    zip_ref.extractall(extract_to)
+
+print(f"Extracted to: {extract_to}")
+
+
+# Creating a ZIP File    zip_ref.write(
+
+import zipfile
+
+zip_path = "my_archive.zip"
+
+with zipfile.ZipFile(zip_path, "w") as zip_ref:
+    zip_ref.write("file1.txt")  # Add a file
+    zip_ref.write("file2.txt", arcname="renamed_file2.txt")  # Rename inside ZIP
+
+print(f"Created ZIP: {zip_path}")
+
+# Listing Contents of a ZIP File zip_ref.namelist()
+
+import zipfile
+
+zip_path = "sample.zip"
+
+with zipfile.ZipFile(zip_path, "r") as zip_ref:
+    print(zip_ref.namelist())  # Lists files inside the ZIP
+
+
+# Extracting a Specific File    zip_ref.extract("file1.txt", extract_to)
+
+import zipfile
+
+zip_path = "sample.zip"
+extract_to = "unzipped_folder"
+
+with zipfile.ZipFile(zip_path, "r") as zip_ref:
+    zip_ref.extract("file1.txt", extract_to)
+
+print(f"Extracted file1.txt to: {extract_to}")
+
+# Checking if a File Exists Inside a ZIP    zip_ref.namelist()
+
+import zipfile
+
+zip_path = "sample.zip"
+
+with zipfile.ZipFile(zip_path, "r") as zip_ref:
+    if "file1.txt" in zip_ref.namelist():
+        print("file1.txt exists inside the ZIP")
+    else:
+        print("File not found in ZIP")
+
+##################### import numpy as np
+
+NumPy is a powerful Python library used for numerical computing, especially with large datasets, mathematical operations, and machine learning.
+
+
+# Why Use NumPy?
+✅ Faster than Python lists (due to C-based implementation).
+✅ Supports arrays and matrices for efficient computation.
+✅ Has built-in functions for linear algebra, statistics, and random number generation.
+✅ Used in AI/ML, data science, image processing, and scientific computing.
+
+
+
+# Installation
+
+To install NumPy, run:
+pip install numpy
+
+# NumPy Basics
+	1️. Creating Arrays
+		import numpy as np
+		
+		# 1D array
+		arr1 = np.array([1, 2, 3, 4])
+		print(arr1)  # Output: [1 2 3 4]
+		
+		# 2D array (Matrix)
+		arr2 = np.array([[1, 2, 3], [4, 5, 6]])
+		print(arr2)
+	2️. Array Operations
+		arr = np.array([1, 2, 3, 4])
+
+		# Element-wise operations
+		print(arr + 2)  # [3 4 5 6]
+		print(arr * 2)  # [2 4 6 8]
+		
+		# Sum, Mean, Max
+		print(np.sum(arr))  # 10
+		print(np.mean(arr)) # 2.5
+		print(np.max(arr))  # 4
+	3️. Matrix Operations
+		A = np.array([[1, 2], [3, 4]])
+		B = np.array([[5, 6], [7, 8]])
+		
+		# Matrix multiplication
+		print(np.dot(A, B))
+	4️. Random Numbers
+		rand_arr = np.random.rand(3, 3)  # 3x3 matrix with random va# es
+		print(rand_arr)
+# NumPy in Machine Learning
+✅ Data Preprocessing – Handling missing values, normalizing data.
+✅ Linear Algebra – Used in neural networks and ML models.
+✅ Feature Engineering – Efficient manipulation of features.
+
+# Common NumPy Functions Used in ML
+
+np.array()	Create NumPy arrays
+np.mean()	Compute the mean
+np.median()	Compute the median
+np.std()	Compute standard deviation
+np.sqrt()	Compute square root
+np.dot()	Perform dot product (used in linear algebra)
+
+
+################## import pandas as pd
+
+The pandas library is one of the most widely used Python libraries for data analysis, data manipulation, and working with structured data (CSV, Excel, JSON, SQL databases, etc.).
+
+#Reading a CSV File
+df = pd.read_csv("data.csv")
+print(df.head())  # Displays first 5 rows
+
+#Writing Data to a CSV File
+df.to_csv("output.csv", index=False)
+
+# Creating a DataFrame from Scratch
+
+import pandas as pd
+
+data = {
+    "Name": ["Alice", "Bob", "Charlie"],
+    "Age": [25, 30, 35],
+    "City": ["New York", "Paris", "London"]
+}
+
+df = pd.DataFrame(data)
+print(df)
+
+
+# Basics
+
+print(df.info())   # Shows column types and non-null values
+print(df.describe())  # Summary statistics for numerical columns
+print(df["Age"].mean())  # Calculates average age
+
+# Filtering and Selecting Data
+young_people = df[df["Age"] < 30]  # Selects rows where Age < 30
+print(young_people)
+
+# Handling missing values
+
+df.fillna(0)  # Replace NaN values with 0
+df.dropna()   # Remove rows with NaN values
+
+# Merging and Joining Data
+df1 = pd.DataFrame({"ID": [1, 2], "Name": ["Alice", "Bob"]})
+df2 = pd.DataFrame({"ID": [1, 2], "Salary": [50000, 60000]})
+
+merged_df = pd.merge(df1, df2, on="ID")
+print(merged_df)
+
+
+Why Use pandas in AI/ML?
+✅ Data Cleaning: Handles missing values, duplicate rows, and inconsistent data.
+✅ Feature Engineering: Creates new features for ML models.
+✅ Exploratory Data Analysis (EDA): Generates summary statistics and visualizations.
+✅ Integration with ML Libraries: Works well with scikit-learn, TensorFlow, PyTorch, etc.
+
+############### Joblib
+
+The joblib module is used for saving and loading machine learning models, large NumPy arrays, and other Python objects efficiently.
+It's commonly used in scikit-learn pipelines for model persistence.
+
+Why Use joblib?
+✅ Fast & Efficient: Stores large ML models faster than pickle (especially with NumPy arrays).
+✅ Compression Support: Reduces storage space using gzip, lzma, or bz2.
+✅ Parallel Computing Support: Efficient for large-scale ML models.
+ 
+ # Save the model
+joblib.dump(model, "logistic_regression_model.pkl")
+
+# Load the model
+loaded_model = joblib.load("logistic_regression_model.pkl")
+
+# Saving and Loading Large NumPy Arrays
+
+# Save with compression
+joblib.dump(arr, "large_array.pkl", compress=3)
+
+# Load the array
+loaded_arr = joblib.load("large_array.pkl")
+
+compress=0: No compression (fastest)
+
+compress=3: Moderate compression
+
+compress=9: Maximum compression (slowest but smallest file size)
+
+
+# Caching Expensive Computations
+
+from joblib import Memory
+import time
+
+memory = Memory(location="cache_dir", verbose=0)
+
+@memory.cache
+def slow_function(x):
+    time.sleep(3)  # Simulating a slow function
+    return x ** 2
+
+print(slow_function(4))  # Takes 3s
+print(slow_function(4))  # Returns instantly (cached)
+
+
+# joblib vs. pickle
+
+🔹 Use joblib for ML models, NumPy arrays, and large objects.
+🔹 Use pickle if you need compatibility across different Python versions.
+
+
+
+
+###########   from sklearn.model_selection import train_test_split
+
+The train_test_split function from sklearn.model_selection is used to split datasets into training and testing sets for machine learning models.
+
+It randomly splits the dataset into:
+
+Training set → Used to train the ML model.
+
+Testing set → Used to evaluate the model’s performance.
+
+Command :
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+# Key Parameters
+
+test_size=0.2	: 20% of the dataset will be used for testing.
+train_size=0.8	: (Optional) Defines training set size. Default is the remaining after test_size.
+random_state=42	: Ensures reproducibility (same split every time).
+shuffle=True	: (Default) Randomly shuffles before splitting.
+stratify=y      : If your dataset has an imbalanced target class distribution, to ensure both sets maintain the same class distribution.
+
+
+
+################# from sklearn.linear_model import ElasticNet
+
+The ElasticNet model from sklearn.linear_model is a linear regression model that combines L1 (Lasso) and L2 (Ridge) regularization. 
+It is useful when dealing with datasets that have multicollinearity or when feature selection is needed.
+
+How ElasticNet Works
+🔹 L1 Regularization (Lasso): Shrinks some coefficients to zero (feature selection).
+🔹 L2 Regularization (Ridge): Shrinks coefficients smoothly, reducing overfitting.
+🔹 ElasticNet: Combines both L1 and L2 penalties, controlled by the l1_ratio parameter.
+
+# Key Parameters
+
+alpha	Controls overall regularization strength. Default = 1.0. Lower = less regularization.
+l1_ratio	0 = Ridge Regression, 1 = Lasso Regression, Between 0 and 1 = ElasticNet
+fit_intercept	Whether to include an intercept term (default: True).
+normalize	If True, scales input features (deprecated in newer versions).
+max_iter	Maximum number of iterations for optimization.
+
+When to Use ElasticNet?
+✅ High-Dimensional Data: When there are more features than samples.
+✅ Multicollinearity: When features are highly correlated (Lasso alone may randomly remove one).
+✅ Feature Selection & Regularization: Balances between feature elimination (Lasso) and coefficient shrinkage (Ridge).
+
+############################# from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+imports three key evaluation metrics from sklearn.metrics that are commonly used to assess regression models:
+
+1. mean_squared_error (MSE)
+
+	Measures the average squared difference between actual and predicted values.
+	
+	Lower MSE means better model performance.
+	
+	Often used with RMSE (Root Mean Squared Error).
+
+2. mean_absolute_error (MAE)
+
+	Measures the average absolute difference between actual and predicted values.
+	
+	Unlike MSE, it does not square the differences, making it less sensitive to outliers.
+	
+3. r2_score (R²)
+	
+	Represents how well the model explains the variance in the target variable.
+	
+	Ranges from -∞ to 1:
+	
+	1 → Perfect model
+	
+	0 → Model is as good as a constant prediction
+	
+	Negative → Worse than a naive model
+
+Example : 
+
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+# Actual vs. Predicted values
+actual = [3, -0.5, 2, 7]
+predicted = [2.5, 0.0, 2, 8]
+
+# Compute metrics
+mse = mean_squared_error(actual, predicted)
+mae = mean_absolute_error(actual, predicted)
+r2 = r2_score(actual, predicted)
+
+print(f"MSE: {mse}, MAE: {mae}, R²: {r2}")
+
+# Summary
+
+	Use MSE when large errors should be penalized more.
+	
+	Use MAE when all errors should be treated equally.
+	
+	Use R² to check how much variance the model explains.
+
+########################### from urllib.parse import urlparse
+
+The urlparse function from urllib.parse is used to parse URLs into their components, making it useful for extracting different parts of a URL.
+
+Example : 
+
+from urllib.parse import urlparse
+
+url = "https://example.com:8080/path/to/page?query=123#section"
+
+# Parse the URL
+parsed_url = urlparse(url)
+
+# Print different components
+print("Scheme:", parsed_url.scheme)    # https
+print("Netloc:", parsed_url.netloc)    # example.com:8080
+print("Path:", parsed_url.path)        # /path/to/page
+print("Params:", parsed_url.params)    # (empty in this case)
+print("Query:", parsed_url.query)      # query=123
+print("Fragment:", parsed_url.fragment) # section
+print("Port:", parsed_url.port)        # 8080
+print("Hostname:", parsed_url.hostname) # example.com
+
+
+scheme 	 : 	Protocol (http, https, ftp, etc.)	
+netloc 	 : 	Domain + port	
+path 	 : 	Path to resource	
+params 	 : 	Optional parameters	
+query 	 : 	Query string (after ?)
+fragment :	Page section (after #)
+port 	 : 	Extracted port	
+hostname : 	Extracted domain name
+
+# Extracting Query Parameters
+
+from urllib.parse import parse_qs
+
+query_string = "name=John&age=25&city=NewYork"
+parsed_query = parse_qs(query_string)
+
+print(parsed_query)  # {'name': ['John'], 'age': ['25'], 'city': ['NewYork']}
+print(parsed_query["name"][0])  # John
+
+
+# Constructing URLs using urlunparse
+
+from urllib.parse import urlunparse
+
+url_components = ("https", "example.com", "/path", "", "query=123", "section")
+new_url = urlunparse(url_components)
+
+print(new_url)  # https://example.com/path?query=123#section
+
+# When to Use urlparse in AI/ML Projects?
+
+✅ Web Scraping → Extract domain, query parameters, and paths from scraped URLs.
+✅ API Calls → Validate and parse API endpoint URLs.
+✅ Logging & Monitoring → Store structured URL data in logs.
+✅ Cybersecurity → Analyze URLs for phishing detection or security threats.
+
+########################### import mlflow
+
+mlflow is an open-source platform for managing the ML lifecycle, including experiment tracking, model versioning, deployment, and logging. 
+It is widely used in AI/ML projects to streamline reproducibility and collaboration.
+
+1. Why Use MLflow?
+✅ Track Experiments – Log metrics, parameters, and models.
+✅ Model Versioning – Manage different versions of trained models.
+✅ Reproducibility – Store complete training runs for future reference.
+✅ Deployment Support – Easily deploy models as REST APIs or in cloud environments.
+
+# pip install mlflow
+
+# MLflow consists of four main components:
+
+MLflow Tracking	: Logs experiments (parameters, metrics, artifacts, etc.).
+MLflow Projects	: Standardizes code packaging for reproducibility.
+MLflow Models	: Manages trained models and deployment.
+MLflow Registry	: Tracks model versions and their metadata.
+
+# Using MLflow for Experiment Tracking
+
+Logging Parameters, Metrics, and Models
+
+# Start an MLflow experiment
+mlflow.set_experiment("ElasticNet Regression")
+
+with mlflow.start_run():
+# Train ElasticNet model
+model = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)
+model.fit(X_train, y_train)
+
+# Log parameters
+mlflow.log_param("alpha", 0.1)
+mlflow.log_param("l1_ratio", 0.5)
+
+# Log performance metrics
+mse = mean_squared_error(y_test, y_pred)
+mlflow.log_metric("mse", mse)
+
+#### import mlflow.sklearn
+
+mlflow.sklearn is a module in MLflow specifically designed for logging and managing scikit-learn models. It allows you to:
+
+✅ Log scikit-learn models
+✅ Save and load trained models
+✅ Track model parameters, metrics, and artifacts
+✅ Deploy models easily
+
+# Log the model
+mlflow.sklearn.log_model(model, "elasticnet_model")
+
+#Saving the Model
+
+mlflow.sklearn.save_model(model, "model_dir")
+
+# Loading the Model
+
+loaded_model = mlflow.sklearn.load_model("model_dir")
+predictions = loaded_model.predict(X_test)
+
+
+
+################################# from flask import Flask, render_template, request
+
+
+The Flask framework is a lightweight web framework for building web applications and APIs in Python. 
+The following imports from flask help in web development:
+
+Flask			: Creates a web application instance
+render_template	: Renders HTML templates for frontend views
+request	Handles : incoming HTTP requests (GET, POST, etc.)
+
+Installing Flask : pip install flask
+
+
+
+# Creating a Basic Flask App
+
+	from flask import Flask, render_template, request
+	
+	app = Flask(__name__)  # Initialize Flask app
+	
+	@app.route("/", methods=["GET", "POST"])
+	def home():
+		if request.method == "POST":
+			user_input = request.form.get("user_input")
+			return f"You entered: {user_input}"
+		return render_template("index.html")  # Render HTML template
+	
+	if __name__ == "__main__":
+		app.run(debug=True)  # Start the server
+
+
+# Creating an HTML Template
+
+	Create a folder named templates, and inside it, create index.html:
+	
+	
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Flask App</title>
+	</head>
+	<body>
+		<h1>Enter Something:</h1>
+		<form method="post">
+			<input type="text" name="user_input">
+			<button type="submit">Submit</button>
+		</form>
+	</body>
+	</html>
+
+
+# Running the Flask App
+Run the script : python app.py
+
+Then open http://127.0.0.1:5000/ in your browser.
+
+# Handling API Requests
+
+Flask is also used to create APIs, which can be useful for AI/ML applications like defect detection and financial data extraction.
+
+Example: ML Model API
+
+	from flask import Flask, request, jsonify
+	import joblib  # For loading models
+	import numpy as np
+	
+	app = Flask(__name__)
+	
+	# Load trained model
+	model = joblib.load("model.pkl")
+	
+	@app.route("/predict", methods=["POST"])
+	def predict():
+		data = request.json
+		features = np.array(data["features"]).reshape(1, -1)
+		prediction = model.predict(features)
+		return jsonify({"prediction": prediction.tolist()})
+	
+	if __name__ == "__main__":
+		app.run(debug=True)
+
+
+# Testing the API
+
+Send a POST request:
+
+	import requests
+	
+	url = "http://127.0.0.1:5000/predict"
+	data = {"features": [0.5, 1.2, 3.4, 2.1]}  # Example input
+	response = requests.post(url, json=data)
+	print(response.json())  # Output: {"prediction": [42.7]}
+
